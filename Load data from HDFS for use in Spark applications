@@ -1,1 +1,72 @@
-### Load data from HDFS for use in Spark applications
+Load data from HDFS for use in Spark applications
+
+>>> ordersRDD = sc.textFile("/user/root/retail_db_files/orders")
+>>> for i in ordersRDD.take(10) : print(i);
+...
+1,2013-07-25 00:00:00.0,11599,CLOSED
+2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT
+3,2013-07-25 00:00:00.0,12111,COMPLETE
+4,2013-07-25 00:00:00.0,8827,CLOSED
+5,2013-07-25 00:00:00.0,11318,COMPLETE
+6,2013-07-25 00:00:00.0,7130,COMPLETE
+7,2013-07-25 00:00:00.0,4530,COMPLETE
+8,2013-07-25 00:00:00.0,2911,PROCESSING
+9,2013-07-25 00:00:00.0,5657,PENDING_PAYMENT
+10,2013-07-25 00:00:00.0,5648,PENDING_PAYMENT
+
+>>> ordersDF = ordersRDD.map(lambda i :Row(orderid=int(i.split(",")[0]),order_date=i.split(",")[1],customer_id= int(i.split(",")[2]) , order_status = i.split(",")[3]) ).toDF()
+>>> ordersDF.show()
++-----------+--------------------+---------------+-------+
+|customer_id|          order_date|   order_status|orderid|
++-----------+--------------------+---------------+-------+
+|      11599|2013-07-25 00:00:...|         CLOSED|      1|
+|        256|2013-07-25 00:00:...|PENDING_PAYMENT|      2|
+|      12111|2013-07-25 00:00:...|       COMPLETE|      3|
+|       8827|2013-07-25 00:00:...|         CLOSED|      4|
+|      11318|2013-07-25 00:00:...|       COMPLETE|      5|
+|       7130|2013-07-25 00:00:...|       COMPLETE|      6|
+|       4530|2013-07-25 00:00:...|       COMPLETE|      7|
+|       2911|2013-07-25 00:00:...|     PROCESSING|      8|
+|       5657|2013-07-25 00:00:...|PENDING_PAYMENT|      9|
+|       5648|2013-07-25 00:00:...|PENDING_PAYMENT|     10|
+|        918|2013-07-25 00:00:...| PAYMENT_REVIEW|     11|
+|       1837|2013-07-25 00:00:...|         CLOSED|     12|
+|       9149|2013-07-25 00:00:...|PENDING_PAYMENT|     13|
+|       9842|2013-07-25 00:00:...|     PROCESSING|     14|
+|       2568|2013-07-25 00:00:...|       COMPLETE|     15|
+|       7276|2013-07-25 00:00:...|PENDING_PAYMENT|     16|
+|       2667|2013-07-25 00:00:...|       COMPLETE|     17|
+|       1205|2013-07-25 00:00:...|         CLOSED|     18|
+|       9488|2013-07-25 00:00:...|PENDING_PAYMENT|     19|
+|       9198|2013-07-25 00:00:...|     PROCESSING|     20|
++-----------+--------------------+---------------+-------+
+only showing top 20 rows
+
+>>> ordersDF.select("orderid","order_date","customer_id","order_status").show()
++-------+--------------------+-----------+---------------+
+|orderid|          order_date|customer_id|   order_status|
++-------+--------------------+-----------+---------------+
+|      1|2013-07-25 00:00:...|      11599|         CLOSED|
+|      2|2013-07-25 00:00:...|        256|PENDING_PAYMENT|
+|      3|2013-07-25 00:00:...|      12111|       COMPLETE|
+|      4|2013-07-25 00:00:...|       8827|         CLOSED|
+|      5|2013-07-25 00:00:...|      11318|       COMPLETE|
+|      6|2013-07-25 00:00:...|       7130|       COMPLETE|
+|      7|2013-07-25 00:00:...|       4530|       COMPLETE|
+|      8|2013-07-25 00:00:...|       2911|     PROCESSING|
+|      9|2013-07-25 00:00:...|       5657|PENDING_PAYMENT|
+|     10|2013-07-25 00:00:...|       5648|PENDING_PAYMENT|
+|     11|2013-07-25 00:00:...|        918| PAYMENT_REVIEW|
+|     12|2013-07-25 00:00:...|       1837|         CLOSED|
+|     13|2013-07-25 00:00:...|       9149|PENDING_PAYMENT|
+|     14|2013-07-25 00:00:...|       9842|     PROCESSING|
+|     15|2013-07-25 00:00:...|       2568|       COMPLETE|
+|     16|2013-07-25 00:00:...|       7276|PENDING_PAYMENT|
+|     17|2013-07-25 00:00:...|       2667|       COMPLETE|
+|     18|2013-07-25 00:00:...|       1205|         CLOSED|
+|     19|2013-07-25 00:00:...|       9488|PENDING_PAYMENT|
+|     20|2013-07-25 00:00:...|       9198|     PROCESSING|
++-------+--------------------+-----------+---------------+
+only showing top 20 rows
+
+
