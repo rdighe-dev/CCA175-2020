@@ -1,5 +1,7 @@
 Load data from HDFS for use in Spark applications
 
+--create RDD from the HDFS File
+
 >>> ordersRDD = sc.textFile("/user/root/retail_db_files/orders")
 >>> for i in ordersRDD.take(10) : print(i);
 ...
@@ -14,6 +16,9 @@ Load data from HDFS for use in Spark applications
 9,2013-07-25 00:00:00.0,5657,PENDING_PAYMENT
 10,2013-07-25 00:00:00.0,5648,PENDING_PAYMENT
 
+-- convert RDD in data frame for which we need to Row class fro pyspark
+
+>>> from pyspark import Row
 >>> ordersDF = ordersRDD.map(lambda i :Row(orderid=int(i.split(",")[0]),order_date=i.split(",")[1],customer_id= int(i.split(",")[2]) , order_status = i.split(",")[3]) ).toDF()
 >>> ordersDF.show()
 +-----------+--------------------+---------------+-------+
@@ -41,6 +46,8 @@ Load data from HDFS for use in Spark applications
 |       9198|2013-07-25 00:00:...|     PROCESSING|     20|
 +-----------+--------------------+---------------+-------+
 only showing top 20 rows
+
+--to change the orders of the colums or do selective columns use select
 
 >>> ordersDF.select("orderid","order_date","customer_id","order_status").show()
 +-------+--------------------+-----------+---------------+
