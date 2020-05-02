@@ -1,2 +1,145 @@
 Read and write files in a variety of file formats
 
+--read a text fiel and create a data frame from HDFS
+>>> ordersRDD = sc.textFile("/user/root/retail_db_files/orders")
+>>> ordersDF = ordersRDD.map(lambda i : Row(orderid = int( i.split(",")[0]),orderdate=i.split(",")[1],customerid=int(i.split(",")[2]),orderstatus=i.split(",")[3]) )
+>>> ordersDF.take(10)
+[Row(customerid=11599, orderdate=u'2013-07-25 00:00:00.0', orderid=1, orderstatus=u'CLOSED'), Row(customerid=256, orderdate=u'2013-07-25 00:00:00.0', orderid=2, orderstatus=u'PENDING_PAYMENT'), Row(customerid=12111, orderdate=u'2013-07-25 00:00:00.0', orderid=3, orderstatus=u'COMPLETE'), Row(customerid=8827, orderdate=u'2013-07-25 00:00:00.0', orderid=4, orderstatus=u'CLOSED'), Row(customerid=11318, orderdate=u'2013-07-25 00:00:00.0', orderid=5, orderstatus=u'COMPLETE'), Row(customerid=7130, orderdate=u'2013-07-25 00:00:00.0', orderid=6, orderstatus=u'COMPLETE'), Row(customerid=4530, orderdate=u'2013-07-25 00:00:00.0', orderid=7, orderstatus=u'COMPLETE'), Row(customerid=2911, orderdate=u'2013-07-25 00:00:00.0', orderid=8, orderstatus=u'PROCESSING'), Row(customerid=5657, orderdate=u'2013-07-25 00:00:00.0', orderid=9, orderstatus=u'PENDING_PAYMENT'), Row(customerid=5648, orderdate=u'2013-07-25 00:00:00.0', orderid=10, orderstatus=u'PENDING_PAYMENT')]
+>>> ordersDF = ordersRDD.map(lambda i : Row(orderid = int( i.split(",")[0]),orderdate=i.split(",")[1],customerid=int(i.split(",")[2]),orderstatus=i.split(",")[3]) ).toDF()
+>>> ordersDF.show()
++----------+--------------------+-------+---------------+
+|customerid|           orderdate|orderid|    orderstatus|
++----------+--------------------+-------+---------------+
+|     11599|2013-07-25 00:00:...|      1|         CLOSED|
+|       256|2013-07-25 00:00:...|      2|PENDING_PAYMENT|
+|     12111|2013-07-25 00:00:...|      3|       COMPLETE|
+|      8827|2013-07-25 00:00:...|      4|         CLOSED|
+|     11318|2013-07-25 00:00:...|      5|       COMPLETE|
+|      7130|2013-07-25 00:00:...|      6|       COMPLETE|
+|      4530|2013-07-25 00:00:...|      7|       COMPLETE|
+|      2911|2013-07-25 00:00:...|      8|     PROCESSING|
+|      5657|2013-07-25 00:00:...|      9|PENDING_PAYMENT|
+|      5648|2013-07-25 00:00:...|     10|PENDING_PAYMENT|
+|       918|2013-07-25 00:00:...|     11| PAYMENT_REVIEW|
+|      1837|2013-07-25 00:00:...|     12|         CLOSED|
+|      9149|2013-07-25 00:00:...|     13|PENDING_PAYMENT|
+|      9842|2013-07-25 00:00:...|     14|     PROCESSING|
+|      2568|2013-07-25 00:00:...|     15|       COMPLETE|
+|      7276|2013-07-25 00:00:...|     16|PENDING_PAYMENT|
+|      2667|2013-07-25 00:00:...|     17|       COMPLETE|
+|      1205|2013-07-25 00:00:...|     18|         CLOSED|
+|      9488|2013-07-25 00:00:...|     19|PENDING_PAYMENT|
+|      9198|2013-07-25 00:00:...|     20|     PROCESSING|
++----------+--------------------+-------+---------------+
+only showing top 20 rows
+
+--use the data frame now to save file different formats
+
+>>> ordersDF.write.json("/user/root/orderjson")
+>>> ordersDF.write.orc("/user/root/ordersORC")
+>>> ordersDF.write.parquet("/user/root/ordersparquet")
+
+>>> os.system("hadoop fs -ls")
+Found 14 items
+drwx------   - root hdfs          0 2020-04-27 18:00 .Trash
+drwxr-xr-x   - root hdfs          0 2020-04-28 03:03 .sparkStaging
+drwx------   - root hdfs          0 2020-03-21 19:03 .staging
+drwxr-xr-x   - root hdfs          0 2020-04-23 03:14 TPA2POLVAL
+drwxr-xr-x   - root hdfs          0 2020-04-17 01:02 dailyrevenuespark
+drwxr-xr-x   - root hdfs          0 2020-04-07 07:52 dailyrevenuetxt
+drwxr-xr-x   - root hdfs          0 2020-04-28 03:22 orderjson
+drwxr-xr-x   - root hdfs          0 2020-04-28 03:22 ordersORC
+drwxr-xr-x   - root hdfs          0 2020-04-28 03:23 ordersparquet
+drwxrwxrwx   - root hdfs          0 2020-04-28 02:08 retail_db
+drwxr-xr-x   - root hdfs          0 2020-04-27 23:21 retail_db_files
+drwxr-xr-x   - root hdfs          0 2020-04-07 03:38 revenuebyorder
+drwxr-xr-x   - root hdfs          0 2020-04-07 04:05 revenuebyordercomp
+drwxr-xr-x   - root hdfs          0 2020-04-07 04:32 revenuejson
+
+--use the above different file formats fiel to create an data frame
+
+
+>>> ordersdfjson = spark.read.json("/user/root/orderjson")
+>>> ordersdfjson.show()
++----------+--------------------+-------+---------------+
+|customerid|           orderdate|orderid|    orderstatus|
++----------+--------------------+-------+---------------+
+|      2373|2013-11-09 00:00:...|  17222|       COMPLETE|
+|     12091|2013-11-09 00:00:...|  17223|PENDING_PAYMENT|
+|       871|2013-11-09 00:00:...|  17224|        PENDING|
+|      6381|2013-11-09 00:00:...|  17225|PENDING_PAYMENT|
+|      4456|2013-11-09 00:00:...|  17226|        PENDING|
+|      5658|2013-11-09 00:00:...|  17227|       COMPLETE|
+|     10224|2013-11-09 00:00:...|  17228|       COMPLETE|
+|      8978|2013-11-09 00:00:...|  17229|PENDING_PAYMENT|
+|     12077|2013-11-09 00:00:...|  17230|SUSPECTED_FRAUD|
+|     11451|2013-11-09 00:00:...|  17231|         CLOSED|
+|      5908|2013-11-09 00:00:...|  17232|       COMPLETE|
+|       969|2013-11-09 00:00:...|  17233|PENDING_PAYMENT|
+|      2727|2013-11-09 00:00:...|  17234|       COMPLETE|
+|      3947|2013-11-09 00:00:...|  17235|       COMPLETE|
+|     12064|2013-11-09 00:00:...|  17236|        PENDING|
+|      9013|2013-11-09 00:00:...|  17237|         CLOSED|
+|      2546|2013-11-09 00:00:...|  17238|       COMPLETE|
+|      5537|2013-11-09 00:00:...|  17239|        ON_HOLD|
+|      7465|2013-11-09 00:00:...|  17240|       COMPLETE|
+|      7491|2013-11-09 00:00:...|  17241|       CANCELED|
++----------+--------------------+-------+---------------+
+only showing top 20 rows
+
+>>> ordersdfORC = spark.read.orc("/user/root/ordersORC")
+>>> ordersdfORC.show()
++----------+--------------------+-------+---------------+
+|customerid|           orderdate|orderid|    orderstatus|
++----------+--------------------+-------+---------------+
+|      5016|2014-06-14 00:00:...|  51663|         CLOSED|
+|     11404|2014-06-14 00:00:...|  51664|     PROCESSING|
+|      8645|2014-06-14 00:00:...|  51665|       COMPLETE|
+|      7192|2014-06-14 00:00:...|  51666|PENDING_PAYMENT|
+|     11178|2014-06-14 00:00:...|  51667|     PROCESSING|
+|       982|2014-06-14 00:00:...|  51668|     PROCESSING|
+|      7160|2014-06-14 00:00:...|  51669|        PENDING|
+|      9322|2014-06-14 00:00:...|  51670|       COMPLETE|
+|      9000|2014-06-14 00:00:...|  51671|       COMPLETE|
+|       117|2014-06-14 00:00:...|  51672|         CLOSED|
+|      7538|2014-06-14 00:00:...|  51673|       COMPLETE|
+|      8348|2014-06-14 00:00:...|  51674|     PROCESSING|
+|      6199|2014-06-14 00:00:...|  51675|PENDING_PAYMENT|
+|     11014|2014-06-14 00:00:...|  51676|        ON_HOLD|
+|      6321|2014-06-14 00:00:...|  51677|       COMPLETE|
+|      6020|2014-06-14 00:00:...|  51678|         CLOSED|
+|      8327|2014-06-14 00:00:...|  51679|PENDING_PAYMENT|
+|      5421|2014-06-14 00:00:...|  51680|         CLOSED|
+|      9367|2014-06-14 00:00:...|  51681|PENDING_PAYMENT|
+|     10903|2014-06-14 00:00:...|  51682|     PROCESSING|
++----------+--------------------+-------+---------------+
+only showing top 20 rows
+
+>>> ordersdfparquet = spark.read.parquet("/user/root/ordersparquet")
+>>> ordersdfparquet.show()
++----------+--------------------+-------+---------------+
+|customerid|           orderdate|orderid|    orderstatus|
++----------+--------------------+-------+---------------+
+|      5016|2014-06-14 00:00:...|  51663|         CLOSED|
+|     11404|2014-06-14 00:00:...|  51664|     PROCESSING|
+|      8645|2014-06-14 00:00:...|  51665|       COMPLETE|
+|      7192|2014-06-14 00:00:...|  51666|PENDING_PAYMENT|
+|     11178|2014-06-14 00:00:...|  51667|     PROCESSING|
+|       982|2014-06-14 00:00:...|  51668|     PROCESSING|
+|      7160|2014-06-14 00:00:...|  51669|        PENDING|
+|      9322|2014-06-14 00:00:...|  51670|       COMPLETE|
+|      9000|2014-06-14 00:00:...|  51671|       COMPLETE|
+|       117|2014-06-14 00:00:...|  51672|         CLOSED|
+|      7538|2014-06-14 00:00:...|  51673|       COMPLETE|
+|      8348|2014-06-14 00:00:...|  51674|     PROCESSING|
+|      6199|2014-06-14 00:00:...|  51675|PENDING_PAYMENT|
+|     11014|2014-06-14 00:00:...|  51676|        ON_HOLD|
+|      6321|2014-06-14 00:00:...|  51677|       COMPLETE|
+|      6020|2014-06-14 00:00:...|  51678|         CLOSED|
+|      8327|2014-06-14 00:00:...|  51679|PENDING_PAYMENT|
+|      5421|2014-06-14 00:00:...|  51680|         CLOSED|
+|      9367|2014-06-14 00:00:...|  51681|PENDING_PAYMENT|
+|     10903|2014-06-14 00:00:...|  51682|     PROCESSING|
++----------+--------------------+-------+---------------+
+only showing top 20 rows
+
