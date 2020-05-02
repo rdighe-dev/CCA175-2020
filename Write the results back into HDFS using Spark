@@ -1,1 +1,48 @@
 Write the results back into HDFS using Spark.
+
+--read a text file in RDD from HDFS
+>>> ordersRDD = sc.textFile("/user/root/retail_db_files/orders")
+>>> ordersRDD.take(10)
+[u'1,2013-07-25 00:00:00.0,11599,CLOSED', u'2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT', u'3,2013-07-25 00:00:00.0,12111,COMPLETE', u'4,2013-07-25 00:00:00.0,8827,CLOSED', u'5,2013-07-25 00:00:00.0,11318,COMPLETE', u'6,2013-07-25 00:00:00.0,7130,COMPLETE', u'7,2013-07-25 00:00:00.0,4530,COMPLETE', u'8,2013-07-25 00:00:00.0,2911,PROCESSING', u'9,2013-07-25 00:00:00.0,5657,PENDING_PAYMENT', u'10,2013-07-25 00:00:00.0,5648,PENDING_PAYMENT']
+>>> for i in ordersRDD.take(10) : print(i);
+...
+1,2013-07-25 00:00:00.0,11599,CLOSED
+2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT
+3,2013-07-25 00:00:00.0,12111,COMPLETE
+4,2013-07-25 00:00:00.0,8827,CLOSED
+5,2013-07-25 00:00:00.0,11318,COMPLETE
+6,2013-07-25 00:00:00.0,7130,COMPLETE
+7,2013-07-25 00:00:00.0,4530,COMPLETE
+8,2013-07-25 00:00:00.0,2911,PROCESSING
+9,2013-07-25 00:00:00.0,5657,PENDING_PAYMENT
+10,2013-07-25 00:00:00.0,5648,PENDING_PAYMENT
+
+--write RDD back to HDFS
+>>> ordersRDD.saveAsTextFile("/user/root/retail_db/ordersRDDtxt")
+>>> ordersRDDtest = sc.textFile("/user/root/retail_db/ordersRDDtxt")
+>>> ordersRDDtest.take(10)
+[u'1,2013-07-25 00:00:00.0,11599,CLOSED', u'2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT', u'3,2013-07-25 00:00:00.0,12111,COMPLETE', u'4,2013-07-25 00:00:00.0,8827,CLOSED', u'5,2013-07-25 00:00:00.0,11318,COMPLETE', u'6,2013-07-25 00:00:00.0,7130,COMPLETE', u'7,2013-07-25 00:00:00.0,4530,COMPLETE', u'8,2013-07-25 00:00:00.0,2911,PROCESSING', u'9,2013-07-25 00:00:00.0,5657,PENDING_PAYMENT', u'10,2013-07-25 00:00:00.0,5648,PENDING_PAYMENT']
+
+
+--write RDD back to HDFS and control number of file using coalesce
+>>> ordersRDD.coalesce(1).saveAsTextFile("/user/root/retail_db/ordersRDDtxt2")
+
+--use python OS class to run hadoop commnads directly from spark session, instead of exit spark to save time in exam 
+(not sure if this will work in exam system)
+
+>>> import os
+>>> os.system("hadoop fs -ls /user/root/retail_db/ordersRDDtxt")
+Found 5 items
+-rw-r--r--   1 root hdfs          0 2020-04-28 02:06 /user/root/retail_db/ordersRDDtxt/_SUCCESS
+-rw-r--r--   1 root hdfs     741614 2020-04-28 02:06 /user/root/retail_db/ordersRDDtxt/part-00000
+-rw-r--r--   1 root hdfs     753022 2020-04-28 02:06 /user/root/retail_db/ordersRDDtxt/part-00001
+-rw-r--r--   1 root hdfs     752368 2020-04-28 02:06 /user/root/retail_db/ordersRDDtxt/part-00002
+-rw-r--r--   1 root hdfs     752940 2020-04-28 02:06 /user/root/retail_db/ordersRDDtxt/part-00003
+0
+>>> os.system("hadoop fs -ls /user/root/retail_db/ordersRDDtxt2")
+Found 2 items
+-rw-r--r--   1 root hdfs          0 2020-04-28 02:08 /user/root/retail_db/ordersRDDtxt2/_SUCCESS
+-rw-r--r--   1 root hdfs    2999944 2020-04-28 02:08 /user/root/retail_db/ordersRDDtxt2/part-00000
+0
+>>>
+
