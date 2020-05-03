@@ -39,22 +39,27 @@ only showing top 20 rows
 >>> ordersDF.write.orc("/user/root/ordersORC")
 >>> ordersDF.write.parquet("/user/root/ordersparquet")
 
+--PLease note you have to add header=true for CSV 
+>>> ordersDF.write.csv("/user/root/orderscsv",header=True)
+
 >>> os.system("hadoop fs -ls")
-Found 14 items
+Found 15 items
 drwx------   - root hdfs          0 2020-04-27 18:00 .Trash
-drwxr-xr-x   - root hdfs          0 2020-04-28 03:03 .sparkStaging
+drwxr-xr-x   - root hdfs          0 2020-04-28 04:15 .sparkStaging
 drwx------   - root hdfs          0 2020-03-21 19:03 .staging
 drwxr-xr-x   - root hdfs          0 2020-04-23 03:14 TPA2POLVAL
 drwxr-xr-x   - root hdfs          0 2020-04-17 01:02 dailyrevenuespark
 drwxr-xr-x   - root hdfs          0 2020-04-07 07:52 dailyrevenuetxt
 drwxr-xr-x   - root hdfs          0 2020-04-28 03:22 orderjson
 drwxr-xr-x   - root hdfs          0 2020-04-28 03:22 ordersORC
+drwxr-xr-x   - root hdfs          0 2020-04-28 04:31 orderscsv
 drwxr-xr-x   - root hdfs          0 2020-04-28 03:23 ordersparquet
 drwxrwxrwx   - root hdfs          0 2020-04-28 02:08 retail_db
 drwxr-xr-x   - root hdfs          0 2020-04-27 23:21 retail_db_files
 drwxr-xr-x   - root hdfs          0 2020-04-07 03:38 revenuebyorder
 drwxr-xr-x   - root hdfs          0 2020-04-07 04:05 revenuebyordercomp
 drwxr-xr-x   - root hdfs          0 2020-04-07 04:32 revenuejson
+
 
 --use the above different file formats fiel to create an data frame
 
@@ -143,6 +148,35 @@ only showing top 20 rows
 +----------+--------------------+-------+---------------+
 only showing top 20 rows
 
+>>> ordersDFcsv = spark.read.csv("/user/root/orderscsv",header=True)
+>>> ordersDFcsv.show()
++----------+--------------------+-------+---------------+
+|customerid|           orderdate|orderid|    orderstatus|
++----------+--------------------+-------+---------------+
+|      2373|2013-11-09 00:00:...|  17222|       COMPLETE|
+|     12091|2013-11-09 00:00:...|  17223|PENDING_PAYMENT|
+|       871|2013-11-09 00:00:...|  17224|        PENDING|
+|      6381|2013-11-09 00:00:...|  17225|PENDING_PAYMENT|
+|      4456|2013-11-09 00:00:...|  17226|        PENDING|
+|      5658|2013-11-09 00:00:...|  17227|       COMPLETE|
+|     10224|2013-11-09 00:00:...|  17228|       COMPLETE|
+|      8978|2013-11-09 00:00:...|  17229|PENDING_PAYMENT|
+|     12077|2013-11-09 00:00:...|  17230|SUSPECTED_FRAUD|
+|     11451|2013-11-09 00:00:...|  17231|         CLOSED|
+|      5908|2013-11-09 00:00:...|  17232|       COMPLETE|
+|       969|2013-11-09 00:00:...|  17233|PENDING_PAYMENT|
+|      2727|2013-11-09 00:00:...|  17234|       COMPLETE|
+|      3947|2013-11-09 00:00:...|  17235|       COMPLETE|
+|     12064|2013-11-09 00:00:...|  17236|        PENDING|
+|      9013|2013-11-09 00:00:...|  17237|         CLOSED|
+|      2546|2013-11-09 00:00:...|  17238|       COMPLETE|
+|      5537|2013-11-09 00:00:...|  17239|        ON_HOLD|
+|      7465|2013-11-09 00:00:...|  17240|       COMPLETE|
+|      7491|2013-11-09 00:00:...|  17241|       CANCELED|
++----------+--------------------+-------+---------------+
+only showing top 20 rows
+
+--inferschema is used to create data frame scehma with accurate data types
 
 >>> lookupsdf = spark.read.csv("/user/root/TPA2POLVAL/lookups.csv",inferSchema = True, header=True)
 >>> lookupsdf.show()
