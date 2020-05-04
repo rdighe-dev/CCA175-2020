@@ -256,3 +256,22 @@ root
  |-- InsertedBy: string (nullable = true)
  |-- UpdatedDate: string (nullable = true)
  |-- UpdatedBy: string (nullable = true)
+
+--write with append and overwrite mode
+
+>>> ordersdf.write.mode("overwrite").orc("/user/root/ordersORC")
+>>> os.system("hadoop fs -ls /user/root/ordersORC")                                                                                                                                                                
+Found 3 items                                                                                                                                                                                                      
+-rw-r--r--   1 root hdfs          0 2020-04-28 05:37 /user/root/ordersORC/_SUCCESS                                                                                                                                 
+-rw-r--r--   1 root hdfs      95343 2020-04-28 05:37 /user/root/ordersORC/part-00000-b2a8b1c0-a907-4b8c-81bb-e01cfcd4d254-c000.snappy.orc                                                                          
+-rw-r--r--   1 root hdfs      93836 2020-04-28 05:37 /user/root/ordersORC/part-00001-b2a8b1c0-a907-4b8c-81bb-e01cfcd4d254-c000.snappy.orc                                                                          
+0                                                                                                                                                                                                                  
+>>> ordersdf.write.mode("append").orc("/user/root/ordersORC")                                                                                                                                                      
+>>> os.system("hadoop fs -ls /user/root/ordersORC")                                                                                                                                                                
+Found 5 items                                                                                                                                                                                                      
+-rw-r--r--   1 root hdfs          0 2020-04-28 05:37 /user/root/ordersORC/_SUCCESS                                                                                                                                 
+-rw-r--r--   1 root hdfs      95343 2020-04-28 05:37 /user/root/ordersORC/part-00000-46a4a2bc-5c3e-4dc8-8063-f3f0e4b5d44d-c000.snappy.orc                                                                          
+-rw-r--r--   1 root hdfs      95343 2020-04-28 05:37 /user/root/ordersORC/part-00000-b2a8b1c0-a907-4b8c-81bb-e01cfcd4d254-c000.snappy.orc                                                                          
+-rw-r--r--   1 root hdfs      93836 2020-04-28 05:37 /user/root/ordersORC/part-00001-46a4a2bc-5c3e-4dc8-8063-f3f0e4b5d44d-c000.snappy.orc                                                                          
+-rw-r--r--   1 root hdfs      93836 2020-04-28 05:37 /user/root/ordersORC/part-00001-b2a8b1c0-a907-4b8c-81bb-e01cfcd4d254-c000.snappy.orc                                                                          
+0                                                                                                                                                      
