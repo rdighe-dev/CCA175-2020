@@ -176,6 +176,15 @@ only showing top 20 rows
 +----------+--------------------+-------+---------------+
 only showing top 20 rows
 
+--schema parameter can be used to pass or inforce your own schema
+>>> ordersDFcsv = spark.read.csv("/user/root/orderscsv",schema ="custcustomerid integer,orderdate timestamp, orderid integer,orderstatus string") 
+>>> ordersDFcsv.printSchema()                                                                                                                                                                                      
+root                                                                                                                                                                                                               
+ |-- custcustomerid: integer (nullable = true)                                                                                                                                                                     
+ |-- orderdate: timestamp (nullable = true)                                                                                                                                                                        
+ |-- orderid: integer (nullable = true)                                                                                                                                                                            
+ |-- orderstatus: string (nullable = true)
+
 --inferschema is used to create data frame scehma with accurate data types
 
 >>> lookupsdf = spark.read.csv("/user/root/TPA2POLVAL/lookups.csv",inferSchema = True, header=True)
